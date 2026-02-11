@@ -1,11 +1,10 @@
-// Prompt Enhancement API
-// Routes through background service worker to bypass page CSP restrictions
-// Falls back to direct fetch for dev mode
+// Background Service Worker for Prompt Enhancer
+// Handles API calls to bypass page CSP restrictions
 
 const API_URL = "https://api.bytez.com/models/v2/openai/gpt-4.1";
 const API_KEY = "3a68d6d2a8c851e3a17b9caf8fe9b41a";
 
-export const TONE_PROMPTS = {
+const TONE_PROMPTS = {
   professional:
     "Rewrite this prompt to be professional, formal, and unambiguous. Focus on clarity and corporate structure.",
   creative:
@@ -15,42 +14,17 @@ export const TONE_PROMPTS = {
     "Rewrite this prompt to be extremely concise and direct. Remove all fluff and unnecessary words.",
 };
 
-/**
- * Enhance a prompt using the AI API.
- * In Chrome extension context: routes through background service worker (CSP-safe).
- * In dev mode: makes direct fetch calls.
- */
-export async function enhancePrompt(text, tone) {
-  // Try to use Chrome extension message passing (CSP-safe)
-  if (
-    typeof chrome !== "undefined" &&
-    chrome.runtime &&
-    chrome.runtime.sendMessage
-  ) {
-    try {
-      const result = await chrome.runtime.sendMessage({
-        type: "ENHANCE_PROMPT",
-        text,
-        tone,
-      });
-
-      if (result) {
-        return result;
-      }
-      // If no result (e.g., background script not ready), fall through to direct fetch
-    } catch (err) {
-      console.warn(
-        "[Prompt Enhancer] Background script unavailable, falling back to direct fetch:",
-        err.message,
-      );
-    }
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === "ENHANCE_PROMPT") {
+    handleEnhancePrompt(message.text, message.tone)
+      .then((result) => sendResponse(result))
+      .catch((err) => sendResponse({ success: false, error: err.message }));
+    // Return true to indicate we will send a response asynchronously
+    return true;
   }
+});
 
-  // Direct fetch fallback (works in dev mode and when CSP allows it)
-  return directFetch(text, tone);
-}
-
-async function directFetch(text, tone) {
+async function handleEnhancePrompt(text, tone) {
   try {
     const systemInstruction = `You are a prompt engineering expert. 
 Task: ${TONE_PROMPTS[tone] || TONE_PROMPTS.professional}
@@ -82,7 +56,7 @@ Rules: Output ONLY the enhanced prompt. No explanations.`;
       ).trim(),
     };
   } catch (e) {
-    console.error("[Prompt Enhancer] API Error:", e);
+    console.error("[Prompt Enhancer BG] API Error:", e);
     return { success: false, error: e.message };
   }
 }

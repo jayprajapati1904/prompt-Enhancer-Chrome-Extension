@@ -13,6 +13,15 @@ export default defineConfig({
     }),
     tailwindcss(),
   ],
+  define: {
+    "import.meta.env.VITE_API_URL": JSON.stringify(
+      process.env.VITE_API_URL ||
+        "https://api.bytez.com/models/v2/openai/gpt-4.1",
+    ),
+    "import.meta.env.VITE_API_KEY": JSON.stringify(
+      process.env.VITE_API_KEY || "3a68d6d2a8c851e3a17b9caf8fe9b41a",
+    ),
+  },
   build: {
     outDir: resolve(__dirname, "../dist"),
     emptyOutDir: true,

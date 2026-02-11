@@ -1,10 +1,13 @@
 {
   "manifest_version": 3,
   "name": "Universal AI Prompt Enhancer",
-  "version": "4.0",
+  "version": "4.1",
   "description": "Enhance prompts on any AI site with Tone Selection, Diff View, and Deep Detection. Built with React.",
-  "permissions": ["activeTab"],
+  "permissions": ["activeTab", "storage"],
   "host_permissions": ["https://api.bytez.com/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
   "web_accessible_resources": [
     {
       "resources": ["content.css"],
