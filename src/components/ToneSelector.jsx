@@ -7,9 +7,10 @@ const TONES = [
 
 export default function ToneSelector({ selectedTone, onSelect }) {
   return (
-    <div className="flex gap-2 flex-wrap">
+    <div className="flex gap-2.5 flex-wrap">
       {TONES.map(({ key, label, emoji }) => {
         const isActive = selectedTone === key;
+
         return (
           <button
             key={key}
@@ -19,44 +20,22 @@ export default function ToneSelector({ selectedTone, onSelect }) {
               e.stopPropagation();
               onSelect(key);
             }}
-            style={{
-              padding: "8px 16px",
-              borderRadius: "24px",
-              fontSize: "13px",
-              fontWeight: isActive ? "700" : "600",
-              cursor: "pointer",
-              whiteSpace: "nowrap",
-              letterSpacing: "0.3px",
-              border: isActive ? "2px solid #6366f1" : "2px solid #e2e8f0",
-              background: isActive
-                ? "linear-gradient(135deg, #e0e7ff 0%, #dbeafe 100%)"
-                : "#ffffff",
-              color: isActive ? "#4338ca" : "#64748b",
-              boxShadow: isActive
-                ? "0 4px 12px rgba(99, 102, 241, 0.15)"
-                : "none",
-              transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              pointerEvents: "auto",
-            }}
-            onMouseEnter={(e) => {
-              if (!isActive) {
-                e.currentTarget.style.background = "#f1f5f9";
-                e.currentTarget.style.borderColor = "#cbd5e1";
-                e.currentTarget.style.transform = "translateY(-2px)";
+            className={`
+              inline-flex items-center gap-2 px-4 py-2 
+              rounded-full text-[13px] tracking-wide whitespace-nowrap 
+              pointer-events-auto transition-all duration-300 ease-out border-2
+              ${
+                isActive
+                  ? "font-bold border-indigo-500 bg-gradient-to-br from-indigo-50 to-blue-50 text-indigo-700 shadow-[0_4px_12px_rgba(99,102,241,0.15)] scale-[1.02]"
+                  : "font-semibold border-slate-200 bg-white text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:-translate-y-0.5 hover:text-slate-700 hover:shadow-sm"
               }
-            }}
-            onMouseLeave={(e) => {
-              if (!isActive) {
-                e.currentTarget.style.background = "#ffffff";
-                e.currentTarget.style.borderColor = "#e2e8f0";
-                e.currentTarget.style.transform = "translateY(0)";
-              }
-            }}
+            `}
           >
-            <span>{emoji}</span>
+            <span
+              className={`text-sm transition-transform duration-300 ${isActive ? "scale-110" : ""}`}
+            >
+              {emoji}
+            </span>
             {label}
           </button>
         );
